@@ -1,7 +1,8 @@
 pipeline {
     agent {
         label 'agent19281'
-    }
+    }  
+    stages {  
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -15,41 +16,29 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo 'Deploying to CIFS share...'
-
-                    // Define source directory and network share details
-                    def sourceDir = "${env.WORKSPACE}" // Jenkins workspace containing the files
-                    def sharePath = "\\\\191.11.100.122\\geetesh" // CIFS share path
-                    def username = "geetesh.chittora" // CIFS username
-                    def password = "Espl@2024" // Replace with actual password
-
+                    echo 'Deploying to local system...'
+                    
+                    // Define source and target directories
+                    def sourceDir = "${env.WORKSPACE}/path-to-your-files" // Adjust the source directory path
+                    def targetDir = "C:/" // Adjust the target directory path
+                    
                     echo "Source Directory: ${sourceDir}"
-                    echo "Target CIFS Share: ${sharePath}"
+                    echo "Target Directory: ${targetDir}"
 
-                    // Map the network drive
+                    // Create the target directory if it doesn't exist
                     bat """
-                    net use Z: ${sharePath} /"C:\\${ geetesh.chittora } ${EsplAt2024 } /P" /PERSISTENT:NO
+                    if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
-                    // Copy files to the network drive
+                    // Copy files to the target directory
                     bat """
-                    xcopy "${sourceDir}\\*.vb" Z:\\ /E /I /Y
-                    xcopy "${sourceDir}\\*.asp" Z:\\ /E /I /Y
+                    xcopy "${sourceDir}\\*.vb" "${targetDir}" /E /I /Y
+                    xcopy "${sourceDir}\\*.asp" "${targetDir}" /E /I /Y
                     """
 
-                    // Unmap the network drive
-                    bat """
-                    net use Z: /DELETE
-                    """
-
-                    echo 'Deployment to CIFS share completed.'
+                    echo 'Deployment Completed.'
                 }
             }
         }
     }
-
-
-
-
-
-
+}
