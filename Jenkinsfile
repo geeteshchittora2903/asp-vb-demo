@@ -37,7 +37,8 @@ pipeline {
 
                     // Loop through the changed files and deploy only the relevant ones
                     changedFiles.split('\n').each { file ->
-                        // Generate full target file path (ensuring no redundant path issue)
+                        // Ensure the source and target file paths are combined properly
+                        def sourceFile = "${sourceDir}\\${file}"
                         def targetFile = "${targetDir}\\${file}"
 
                         // Get the directory portion of the file
@@ -50,9 +51,9 @@ pipeline {
                         """
 
                         // Deploy the file (with corrected paths)
-                        echo "Deploying ${file} to ${targetFile}"
+                        echo "Deploying ${sourceFile} to ${targetFile}"
                         bat """
-                        xcopy /Y "${sourceDir}\\${file}" "${targetFile}"
+                        xcopy /Y "${sourceFile}" "${targetFile}"
                         """
                     }
 
