@@ -19,8 +19,8 @@ pipeline {
                     echo 'Deploying only updated files to local system...'
 
                     // Define source and target directories
-                    def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
-                    def targetDir = "C:/Jenkins/Deployment" // Adjust the target directory path
+                    def sourceDir = "${env.WORKSPACE}" // Local workspace where the repo is cloned
+                    def targetDir = "C:/Jenkins/Deployment" // Target deployment directory
                     
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
@@ -36,25 +36,25 @@ pipeline {
                     echo "Changed files: ${changedFiles}"
 
                     // Loop through the changed files and deploy only the relevant ones
-                    changedFiles.split('\n').each { file ->
-                        // Ensure the source and target file paths are combined properly
-                        def sourceFile = "${sourceDir}\\${file}"
-                        def targetFile = "${targetDir}\\${file}"
+                    def files = changedFiles.split('\n')  // Split by line to get each file
+                    files.each { file ->
+                        // Ensure file path is not empty
+                        if (file.trim()) {
+                            def sourceFile = "${sourceDir}\\${file}"
+                            def targetFile = "${targetDir}\\${file}"
 
-                        // Get the directory portion of the file
-                        def fileDir = file.replaceAll('[^/]+$', '') // Remove the filename, leave the directory
-                        def targetSubDir = "${targetDir}\\${fileDir}"
+                            // Create the directory structure in target if not already there
+                            def targetSubDir = targetFile.substring(0, targetFile.lastIndexOf('\\'))
+                            bat """
+                            if not exist "${targetSubDir}" mkdir "${targetSubDir}"
+                            """
 
-                        // Create the directory if it does not exist
-                        bat """
-                        if not exist "${targetSubDir}" mkdir "${targetSubDir}"
-                        """
-
-                        // Deploy the file (with corrected paths)
-                        echo "Deploying ${sourceFile} to ${targetFile}"
-                        bat """
-                        xcopy /Y "${sourceFile}" "${targetFile}"
-                        """
+                            // Deploy the file
+                            echo "Deploying ${sourceFile} to ${targetFile}"
+                            bat """
+                            xcopy /Y "${sourceFile}" "${targetFile}"
+                            """
+                        }
                     }
 
                     echo 'Deployment Completed.'
