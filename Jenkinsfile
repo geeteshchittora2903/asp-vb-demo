@@ -28,7 +28,7 @@ pipeline {
 
                     // Map the network drive
                     bat """
-                    net use Z: ${sharePath} /C:${ geetesh.chittora } ${Espl@2024 } /PERSISTENT:NO
+                    net use Z: ${sharePath} /"C:\\${ geetesh.chittora } ${EsplAt2024 } /P" /PERSISTENT:NO
                     """
 
                     // Copy files to the network drive
