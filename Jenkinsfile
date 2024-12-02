@@ -19,7 +19,7 @@ pipeline {
                     echo 'Deploying to local system...'
                     
                     // Define source and target directories
-                    def sourceDir = "${env.WORKSPACE}/https://github.com/geeteshchittora2903/asp-vb-demo.git" // Adjust the source directory path
+                    def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
                     def targetDir = "C:/" // Adjust the target directory path
                     
                     echo "Source Directory: ${sourceDir}"
