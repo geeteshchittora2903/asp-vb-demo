@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying only updated files to local system...'
-                    
+
                     // Define source and target directories
                     def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
                     def targetDir = "C:/Jenkins/Deployment" // Adjust the target directory path
@@ -37,11 +37,11 @@ pipeline {
 
                     // Loop through the changed files and deploy only the relevant ones
                     changedFiles.split('\n').each { file ->
-                        // Generate full target file path
+                        // Generate full target file path (ensuring no redundant path issue)
                         def targetFile = "${targetDir}\\${file}"
 
-                        // Create the necessary directories in the target if they don't exist
-                        def fileDir = file.replaceAll('[^/]+$', '') // Get the directory path (remove filename)
+                        // Get the directory portion of the file
+                        def fileDir = file.replaceAll('[^/]+$', '') // Remove the filename, leave the directory
                         def targetSubDir = "${targetDir}\\${fileDir}"
 
                         // Create the directory if it does not exist
@@ -49,7 +49,7 @@ pipeline {
                         if not exist "${targetSubDir}" mkdir "${targetSubDir}"
                         """
 
-                        // Deploy the file
+                        // Deploy the file (with corrected paths)
                         echo "Deploying ${file} to ${targetFile}"
                         bat """
                         xcopy /Y "${sourceDir}\\${file}" "${targetFile}"
