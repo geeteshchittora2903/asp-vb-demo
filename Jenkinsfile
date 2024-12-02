@@ -1,8 +1,8 @@
 pipeline {
     agent {
         label 'agent19281'
-    }  
-    stages {  
+    }
+    stages {
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -16,7 +16,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo 'Deploying to local system...'
+                    echo 'Deploying only updated files to local system...'
                     
                     // Define source and target directories
                     def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
@@ -30,19 +30,31 @@ pipeline {
                     if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
-                    // Create the Folder1 AND Folder2 at the target direc tory if not exist
-                    //bat"""
-                    //if not exist "${targetDir}\\Folder1" mkdir "${targetDir}\\Folder1"
-                    //if not exist "${targetDir}\\Folder2" mkdir "${targetDir}\\Folder2"
-                    //"""
-                    
-                    // Deploy 1 file from folder1 and 2 files from folder2
-                    // Adjust file paths for the files you need to deploy
-                    bat """
-                    xcopy "${sourceDir}\\folder1\\demo1.vb" "${targetDir}" /Y
-                    xcopy "${sourceDir}\\folder2\\sample2.vb" "${targetDir}" /Y
-                    xcopy "${sourceDir}\\folder2\\sample3.vb" "${targetDir}" /Y
-                    """
+                    // Get the list of changed files from the last commit
+                    def changedFiles = bat(script: 'git diff --name-only HEAD~1 HEAD', returnStdout: true).trim()
+
+                    echo "Changed files: ${changedFiles}"
+
+                    // Loop through the changed files and deploy only the relevant ones
+                    changedFiles.split('\n').each { file ->
+                        // Check if the file is in folder1 or folder2, or any other folder
+                        def targetFileDir = "${targetDir}\\${file}"
+
+                        // Create the necessary directories in the target if they don't exist
+                        def fileDir = file.replaceAll('[^/]+$', '') // Get the directory path (remove filename)
+                        def targetSubDir = "${targetDir}\\${fileDir}"
+                        
+                        // Create the directory if it does not exist
+                        bat """
+                        if not exist "${targetSubDir}" mkdir "${targetSubDir}"
+                        """
+
+                        // Deploy the file
+                        echo "Deploying ${file} to ${targetDir}\\${file}"
+                        bat """
+                        xcopy "${sourceDir}\\${file}" "${targetDir}\\${file}" /Y
+                        """
+                    }
 
                     echo 'Deployment Completed.'
                 }
