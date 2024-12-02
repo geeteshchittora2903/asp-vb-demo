@@ -20,7 +20,7 @@ pipeline {
                     
                     // Define source and target directories
                     def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
-                    def targetDir = "C:/Jenkins/Deployment"// Adjust the target directory path
+                    def targetDir = "C:/Jenkins/Deployment" // Adjust the target directory path
                     
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
@@ -30,10 +30,12 @@ pipeline {
                     if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
-                    // Copy files to the target directory
+                    // Deploy 1 file from folder1 and 2 files from folder2
+                    // Adjust file paths for the files you need to deploy
                     bat """
-                    xcopy "${sourceDir}\\*.vb" "${targetDir}" /E /I /Y
-                    xcopy "${sourceDir}\\*.asp" "${targetDir}" /E /I /Y
+                    xcopy "${sourceDir}\\folder1\\file1.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder2\\file2.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder2\\file3.vb" "${targetDir}" /Y
                     """
 
                     echo 'Deployment Completed.'
