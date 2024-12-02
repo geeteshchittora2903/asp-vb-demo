@@ -37,22 +37,22 @@ pipeline {
 
                     // Loop through the changed files and deploy only the relevant ones
                     changedFiles.split('\n').each { file ->
-                        // Check if the file is in folder1 or folder2, or any other folder
-                        def targetFileDir = "${targetDir}\\${file}"
+                        // Generate full target file path
+                        def targetFile = "${targetDir}\\${file}"
 
                         // Create the necessary directories in the target if they don't exist
                         def fileDir = file.replaceAll('[^/]+$', '') // Get the directory path (remove filename)
                         def targetSubDir = "${targetDir}\\${fileDir}"
-                        
+
                         // Create the directory if it does not exist
                         bat """
                         if not exist "${targetSubDir}" mkdir "${targetSubDir}"
                         """
 
                         // Deploy the file
-                        echo "Deploying ${file} to ${targetDir}\\${file}"
+                        echo "Deploying ${file} to ${targetFile}"
                         bat """
-                        xcopy "${sourceDir}\\${file}" "${targetDir}\\${file}" /Y
+                        xcopy /Y "${sourceDir}\\${file}" "${targetFile}"
                         """
                     }
 
