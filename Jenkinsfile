@@ -33,9 +33,9 @@ pipeline {
                     // Deploy 1 file from folder1 and 2 files from folder2
                     // Adjust file paths for the files you need to deploy
                     bat """
-                    xcopy "${sourceDir}\\folder1\\file1.vb" "${targetDir}" /Y
-                    xcopy "${sourceDir}\\folder2\\file2.vb" "${targetDir}" /Y
-                    xcopy "${sourceDir}\\folder2\\file3.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder1\\demo1.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder2\\sample2.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder2\\sample3.vb" "${targetDir}" /Y
                     """
 
                     echo 'Deployment Completed.'
