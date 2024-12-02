@@ -30,6 +30,12 @@ pipeline {
                     if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
+                    // Create the Folder1 AND Folder2 at the target direc tory if not exist
+                    //bat"""
+                    //if not exist "${targetDir}\\Folder1" mkdir "${targetDir}\\Folder1"
+                    //if not exist "${targetDir}\\Folder2" mkdir "${targetDir}\\Folder2"
+                    //"""
+                    
                     // Deploy 1 file from folder1 and 2 files from folder2
                     // Adjust file paths for the files you need to deploy
                     bat """
