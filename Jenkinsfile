@@ -19,7 +19,7 @@ pipeline {
                     echo 'Deploying to local system...'
                     
                     // Define source and target directories
-                    def sourceDir = "${env.WORKSPACE}/path-to-your-files" // Adjust the source directory path
+                    def sourceDir = "${env.WORKSPACE}/https://github.com/geeteshchittora2903/asp-vb-demo.git" // Adjust the source directory path
                     def targetDir = "C:/" // Adjust the target directory path
                     
                     echo "Source Directory: ${sourceDir}"
