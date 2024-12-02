@@ -20,7 +20,7 @@ pipeline {
                     
                     // Define source and target directories
                     def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
-                    def targetDir = "C:/" // Adjust the target directory path
+                    def targetDir = "C:/Jenkins/Deployment"// Adjust the target directory path
                     
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
