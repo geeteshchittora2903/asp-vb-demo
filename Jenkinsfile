@@ -2,10 +2,6 @@ pipeline {
     agent {
         label 'agent19281'
     }
-    triggers {
-        // Polling SCM every minute to check for changes
-        pollSCM('* * * * *') 
-    }
     stages {
         stage('Build') {
             steps {
@@ -35,29 +31,29 @@ pipeline {
                     """
 
                     // Get a list of files that have been updated
-                    def modifiedFiles = bat(script: 'git ls-tree -r HEAD --name-only', returnStdout: true).trim()
+                    def modifiedFiles = bat(script: 'git ls-tree -r HEAD --name-only', returnStdout: true).trim().split('\n')
 
                     echo "Modified files: ${modifiedFiles}"
 
                     // Loop through the modified files and deploy only the relevant ones
-                    modifiedFiles.split('\n').each { file ->
-                        // Get the file's target directory
-                        def targetFileDir = "${targetDir}\\${file}"
+                    modifiedFiles.each { file ->
+                        // Skip files if they are directories or not part of the target
+                        if (!file.endsWith('/') && (file.startsWith('Folder1/') || file.startsWith('Folder2/'))) {
+                            def sourceFilePath = "${sourceDir}\\${file}"
+                            def targetFilePath = "${targetDir}\\${file}"
 
-                        // Create the necessary directories in the target if they don't exist
-                        def fileDir = file.replaceAll('[^/]+$', '') // Get the directory path (remove filename)
-                        def targetSubDir = "${targetDir}\\${fileDir}"
-                        
-                        // Create the directory if it does not exist
-                        bat """
-                        if not exist "${targetSubDir}" mkdir "${targetSubDir}"
-                        """
-
-                        // Deploy the file
-                        echo "Deploying ${file} to ${targetDir}\\${file}"
-                        bat """
-                        xcopy "${sourceDir}\\${file}" "${targetDir}\\${file}" /Y
-                        """
+                            // Create necessary directories in the target if they don't exist
+                            def targetDirPath = targetFilePath.replaceAll(/[^\\]+$/, '') // Extract directory part from the file path
+                            bat """
+                            if not exist "${targetDirPath}" mkdir "${targetDirPath}"
+                            """
+                            
+                            // Deploy the file
+                            echo "Deploying ${file} to ${targetFilePath}"
+                            bat """
+                            xcopy "${sourceFilePath}" "${targetFilePath}" /Y
+                            """
+                        }
                     }
 
                     echo 'Deployment Completed.'
