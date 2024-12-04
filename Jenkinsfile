@@ -25,11 +25,6 @@ pipeline {
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
 
-                    // Create the target directory if it doesn't exist
-                    bat """
-                    if not exist "${targetDir}" mkdir "${targetDir}"
-                    """
-
                     // Get a list of files that have been updated
                     def modifiedFiles = bat(script: 'git ls-tree -r HEAD --name-only', returnStdout: true).trim().split('\n')
 
