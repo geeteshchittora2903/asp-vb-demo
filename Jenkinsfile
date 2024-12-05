@@ -1,8 +1,8 @@
 pipeline {
     agent {
         label 'agent19281'
-    }
-    stages {
+    }  
+    stages {  
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -16,7 +16,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo 'Deploying only updated files to local system...'
+                    echo 'Deploying to local system...'
                     
                     // Define source and target directories
                     def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
@@ -25,31 +25,24 @@ pipeline {
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
 
-                    // Get a list of files that have been updated
-                    def modifiedFiles = bat(script: 'git ls-tree -r HEAD --name-only', returnStdout: true).trim().split('\n')
+                    // Create the target directory if it doesn't exist
+                    bat """
+                    if not exist "${targetDir}" mkdir "${targetDir}"
+                    """
 
-                    echo "Modified files: ${modifiedFiles}"
-
-                    // Loop through the modified files and deploy only the relevant ones
-                    modifiedFiles.each { file ->
-                        // Skip files if they are directories or not part of the target
-                        if (!file.endsWith('/') && (file.startsWith('Folder1/') || file.startsWith('Folder2/'))) {
-                            def sourceFilePath = "${sourceDir}\\${file}"
-                            def targetFilePath = "${targetDir}\\${file}"
-
-                            // Create necessary directories in the target if they don't exist
-                            def targetDirPath = targetFilePath.replaceAll(/[^\\]+$/, '') // Extract directory part from the file path
-                            bat """
-                            if not exist "${targetDirPath}" mkdir "${targetDirPath}"
-                            """
-                            
-                            // Deploy the file
-                            echo "Deploying ${file} to ${targetFilePath}"
-                            bat """
-                            xcopy "${sourceFilePath}" "${targetFilePath}" /Y
-                            """
-                        }
-                    }
+                    // Create the Folder1 AND Folder2 at the target direc tory if not exist
+                    //bat"""
+                    //if not exist "${targetDir}\\Folder1" mkdir "${targetDir}\\Folder1"
+                    //if not exist "${targetDir}\\Folder2" mkdir "${targetDir}\\Folder2"
+                    //"""
+                    
+                    // Deploy 1 file from folder1 and 2 files from folder2
+                    // Adjust file paths for the files you need to deploy
+                    bat """
+                    xcopy "${sourceDir}\\folder1\\demo1.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder2\\sample2.vb" "${targetDir}" /Y
+                    xcopy "${sourceDir}\\folder2\\sample3.vb" "${targetDir}" /Y
+                    """
 
                     echo 'Deployment Completed.'
                 }
