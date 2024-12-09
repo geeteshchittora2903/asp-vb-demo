@@ -1,7 +1,8 @@
-' Simple VBScript to print "Geetesh"
-Sub Main()
-    ' Print the name Geetesh
-    WScript.Echo "Geetesh"
-End Sub
+Imports System
 
-Main()
+Module PrintXYZ
+    Sub Main()
+        ' Print "xyz" to the console
+        Console.WriteLine("xyz")
+    End Sub
+End Module
