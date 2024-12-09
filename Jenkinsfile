@@ -1,8 +1,8 @@
 pipeline {
     agent {
         label 'agent19281'
-    }
-    stages {
+    }  
+    stages {  
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -19,31 +19,21 @@ pipeline {
                     echo 'Deploying to local system...'
 
                     // Define source and target directories
-                    def sourceDir = "${env.WORKSPACE}" // Source directory
-                    def targetDir = "C:/Jenkins/Deployment" // Target directory
-                    
+                    def sourceDir = "${env.WORKSPACE}" // This is the local workspace where the repo is cloned
+                    def targetDir = "C:/Jenkins/Deployment" // Adjust the target directory path
+
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
 
-                    // Create the target directory if it doesn't exist
+                    // Ensure the target directory exists
                     bat """
                     if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
-                    // Compare files and copy updated ones
-                    echo "Copying updated files..."
+                    // Recursively copy all files and folders
+                    // Update files and create directories as needed
                     bat """
-                    for %%F in (${sourceDir}\\*.vb ${sourceDir}\\*.asp) do (
-                        if not exist "${targetDir}\\%%~nxF" (
-                            copy "%%F" "${targetDir}"
-                        ) else (
-                            for /f %%I in ('certutil -hashfile "%%F" SHA256') do set HASH1=%%I
-                            for /f %%J in ('certutil -hashfile "${targetDir}\\%%~nxF" SHA256') do set HASH2=%%J
-                            if not "!HASH1!"=="!HASH2!" (
-                                copy "%%F" "${targetDir}"
-                            )
-                        )
-                    )
+                    robocopy "${sourceDir}" "${targetDir}" *.vb *.asp /E /Z /COPYALL /R:3 /W:5
                     """
 
                     echo 'Deployment Completed.'
