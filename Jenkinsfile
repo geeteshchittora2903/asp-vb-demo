@@ -33,7 +33,7 @@ pipeline {
                     // Recursively copy all files and folders
                     // Update files and create directories as needed
                     bat """
-                    robocopy "${sourceDir}" "${targetDir}" *.vb *.asp /E /Z /COPYALL /R:3 /W:5
+                    robocopy "${sourceDir}" "${targetDir}" *.vb *.asp /E /Z /COPY:DAT /R:3 /W:5
                     """
 
                     echo 'Deployment Completed.'
