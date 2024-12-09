@@ -1,8 +1,8 @@
 pipeline {
     agent {
         label 'agent19281'
-    }  
-    stages {  
+    }
+    stages {
         stage('Build') {
             steps {
                 echo 'Building...'
@@ -17,35 +17,34 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to local system...'
-                    
-                    // Define source and target directories
-                    def sourceDir = "${env.WORKSPACE}" // Local workspace
-                    def targetDir = "C:/Jenkins/Deployment" // Target deployment directory
 
+                    // Define source and target directories
+                    def sourceDir = "${env.WORKSPACE}" // Source directory
+                    def targetDir = "C:/Jenkins/Deployment" // Target directory
+                    
                     echo "Source Directory: ${sourceDir}"
                     echo "Target Directory: ${targetDir}"
 
-                    // Ensure target directory exists
+                    // Create the target directory if it doesn't exist
                     bat """
                     if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
-                    // Define files to deploy
-                    def filesToDeploy = [
-                        "${sourceDir}\\folder1\\demo1.vb",
-                        "${sourceDir}\\folder2\\sample2.vb",
-                        "${sourceDir}\\folder2\\sample3.vb"
-                    ]
-
-                    // Deploy files one by one
-                    filesToDeploy.each { filePath ->
-                        def fileName = filePath.tokenize("\\").last() // Extract file name
-                        echo "Deploying file: ${fileName}"
-
-                        bat """
-                        xcopy "${filePath}" "${targetDir}" /Y
-                        """
-                    }
+                    // Compare files and copy updated ones
+                    echo "Copying updated files..."
+                    bat """
+                    for %%F in (${sourceDir}\\*.vb ${sourceDir}\\*.asp) do (
+                        if not exist "${targetDir}\\%%~nxF" (
+                            copy "%%F" "${targetDir}"
+                        ) else (
+                            for /f %%I in ('certutil -hashfile "%%F" SHA256') do set HASH1=%%I
+                            for /f %%J in ('certutil -hashfile "${targetDir}\\%%~nxF" SHA256') do set HASH2=%%J
+                            if not "!HASH1!"=="!HASH2!" (
+                                copy "%%F" "${targetDir}"
+                            )
+                        )
+                    )
+                    """
 
                     echo 'Deployment Completed.'
                 }
