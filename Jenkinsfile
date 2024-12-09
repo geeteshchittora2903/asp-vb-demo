@@ -31,10 +31,16 @@ pipeline {
                     """
 
                     // Recursively copy all files and folders
-                    // Update files and create directories as needed
-                    bat """
+                    // Allow exit codes 0 and 1 as success
+                    def returnCode = bat returnStatus: true, script: """
                     robocopy "${sourceDir}" "${targetDir}" *.vb *.asp /E /Z /COPY:DAT /R:3 /W:5
                     """
+
+                    if (returnCode > 1) {
+                        error "Robocopy failed with exit code ${returnCode}"
+                    } else {
+                        echo "Robocopy completed successfully with exit code ${returnCode}"
+                    }
 
                     echo 'Deployment Completed.'
                 }
