@@ -35,7 +35,7 @@ pipeline {
                      //   "${sourceDir}\\folder1\\demo1.vb",
                        // "${sourceDir}\\folder2\\sample2.vb",
                        // "${sourceDir}\\folder2\\sample3.vb"
-                    ]
+                 //   ]
 
                     // Deploy files one by one
                     filesToDeploy.each { filePath ->
