@@ -30,12 +30,12 @@ pipeline {
                     if not exist "${targetDir}" mkdir "${targetDir}"
                     """
 
-                    // Dynamically define the list of files to deploy
-                   // def filesToDeploy = [
-                     //   "${sourceDir}\\folder1\\demo1.vb",
-                       // "${sourceDir}\\folder2\\sample2.vb",
-                       // "${sourceDir}\\folder2\\sample3.vb"
-                 //   ]
+                    // Define files to deploy
+                    def filesToDeploy = [
+                        "${sourceDir}\\folder1\\demo1.vb",
+                        "${sourceDir}\\folder2\\sample2.vb",
+                        "${sourceDir}\\folder2\\sample3.vb"
+                    ]
 
                     // Deploy files one by one
                     filesToDeploy.each { filePath ->
